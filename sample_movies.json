@@ -1,0 +1,72 @@
+[
+  {
+    "title": "Inception",
+    "director": "Christopher Nolan",
+    "releaseYear": 2010,
+    "genre": "Sci-Fi",
+    "image": "https://m.media-amazon.com/images/I/81p+xe8cbnL._AC_SY679_.jpg"
+  },
+  {
+    "title": "The Godfather",
+    "director": "Francis Ford Coppola",
+    "releaseYear": 1972,
+    "genre": "Crime",
+    "image": "https://m.media-amazon.com/images/I/51f6crn8TPL._AC_.jpg"
+  },
+  {
+    "title": "The Dark Knight",
+    "director": "Christopher Nolan",
+    "releaseYear": 2008,
+    "genre": "Action",
+    "image": "https://m.media-amazon.com/images/I/51EbJjlLg7L._AC_.jpg"
+  },
+  {
+    "title": "Pulp Fiction",
+    "director": "Quentin Tarantino",
+    "releaseYear": 1994,
+    "genre": "Crime",
+    "image": "https://m.media-amazon.com/images/I/71c05lTE03L._AC_SY679_.jpg"
+  },
+  {
+    "title": "Interstellar",
+    "director": "Christopher Nolan",
+    "releaseYear": 2014,
+    "genre": "Sci-Fi",
+    "image": "https://m.media-amazon.com/images/I/71n58ZtN+pL._AC_SY679_.jpg"
+  },
+  {
+    "title": "Forrest Gump",
+    "director": "Robert Zemeckis",
+    "releaseYear": 1994,
+    "genre": "Drama",
+    "image": "https://m.media-amazon.com/images/I/61F5cG7SQuL._AC_SY679_.jpg"
+  },
+  {
+    "title": "The Matrix",
+    "director": "The Wachowskis",
+    "releaseYear": 1999,
+    "genre": "Sci-Fi",
+    "image": "https://m.media-amazon.com/images/I/51vpnbwFHrL._AC_.jpg"
+  },
+  {
+    "title": "Gladiator",
+    "director": "Ridley Scott",
+    "releaseYear": 2000,
+    "genre": "Action",
+    "image": "https://m.media-amazon.com/images/I/71xBLRBYOiL._AC_SY679_.jpg"
+  },
+  {
+    "title": "The Shawshank Redemption",
+    "director": "Frank Darabont",
+    "releaseYear": 1994,
+    "genre": "Drama",
+    "image": "https://m.media-amazon.com/images/I/51NiGlapXlL._AC_.jpg"
+  },
+  {
+    "title": "Avengers: Endgame",
+    "director": "Anthony and Joe Russo",
+    "releaseYear": 2019,
+    "genre": "Action",
+    "image": "https://m.media-amazon.com/images/I/81ExhpBEbHL._AC_SY679_.jpg"
+  }
+]
