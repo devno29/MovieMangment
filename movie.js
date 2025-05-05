@@ -20,33 +20,28 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ['./movie.js'], 
+  apis: ['./movie.js'], // Point to this file
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
-
-// Connect to MongoDB
+// MongoDB connection
 const connectDB = async () => {
   try {
     await mongoose.connect('mongodb://127.0.0.1:27017/moviesDB');
-    console.log('MongoDB connected');
+    console.log('✅ MongoDB connected');
   } catch (err) {
-    console.error('MongoDB connection error:', err.message);
-    process.exit(1); // Exit if DB connection fails
+    console.error('❌ MongoDB connection error:', err.message);
+    process.exit(1);
   }
 };
 
 const app = express();
 const PORT = 3000;
-
 connectDB();
 
 // Middleware
 app.use(express.json());
-
-// Serve Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Logger middleware
 app.use((req, res, next) => {
@@ -57,32 +52,30 @@ app.use((req, res, next) => {
   next();
 });
 
+// Swagger docs route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Home route
 app.get('/', (req, res) => {
   res.send('Welcome to the Movies Management API!');
 });
 
-// Mongoose schema and model
+// Mongoose schema
 const movieSchema = new mongoose.Schema({
   title: String,
   director: String,
   releaseYear: Number,
   genre: String,
-  image: String
+  image: String,
 });
 
 const Movie = mongoose.model('Movie', movieSchema);
-
-
-
-// GET all movies
 
 /**
  * @swagger
  * /api/movies:
  *   get:
- *     description: Get all movies (optionally filtered by title, year, genre)
+ *     description: Get all movies (with optional filters)
  *     parameters:
  *       - in: query
  *         name: title
@@ -98,9 +91,9 @@ const Movie = mongoose.model('Movie', movieSchema);
  *           type: string
  *     responses:
  *       200:
- *         description: List of movies
+ *         description: A list of movies
  */
-app.get('/api/movies', async (req, res) => {
+app.get('/api/movies', async (req, res, next) => {
   try {
     const { title, releaseYear, genre } = req.query;
     const filter = {};
@@ -111,12 +104,9 @@ app.get('/api/movies', async (req, res) => {
     const movies = await Movie.find(filter);
     res.json(movies);
   } catch (err) {
-    res.status(500).json({ error: 'Server Error' });
+    next(err);
   }
 });
-
-
-// POST a new movie
 
 /**
  * @swagger
@@ -149,46 +139,35 @@ app.get('/api/movies', async (req, res) => {
  *                 format: uri
  *     responses:
  *       201:
- *         description: Movie added successfully
+ *         description: Movie added
  */
 app.post('/api/movies',
   [
-    body('title')
-      .notEmpty().withMessage('Title is required')
-      .isLength({ min: 1 }).withMessage('Title must be at least 1 character'),
-    
-    body('director')
-      .notEmpty().withMessage('Director is required'),
-    
+    body('title').notEmpty().withMessage('Title is required'),
+    body('director').notEmpty().withMessage('Director is required'),
     body('releaseYear')
-      .notEmpty().withMessage('Release year is required')
       .isInt({ min: 1888, max: new Date().getFullYear() })
       .withMessage('Release year must be valid'),
-    
     body('genre')
-      .notEmpty().withMessage('Genre is required')
       .isIn(['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Romance', 'Other'])
       .withMessage('Invalid genre'),
-
-    body('image')
-      .optional()
-      .isURL().withMessage('Image must be a valid URL'),
+    body('image').optional().isURL().withMessage('Image must be a valid URL'),
   ],
-  async (req, res) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // If valid, continue to save to DB
-    const movie = new Movie(req.body);
-    await movie.save();
-    res.status(201).json(movie);
+    try {
+      const movie = new Movie(req.body);
+      await movie.save();
+      res.status(201).json(movie);
+    } catch (err) {
+      next(err);
+    }
   }
 );
-
-
-// PUT (Update) a movie
 
 /**
  * @swagger
@@ -227,63 +206,44 @@ app.post('/api/movies',
  *                 format: uri
  *     responses:
  *       200:
- *         description: Movie updated successfully
+ *         description: Movie updated
  *       404:
  *         description: Movie not found
  */
-
 app.put('/api/movies/:id',
   [
-    body('title')
-      .notEmpty().withMessage('Title is required')
-      .isLength({ min: 1 }).withMessage('Title must be at least 1 character'),
-    
-    body('director')
-      .notEmpty().withMessage('Director is required'),
-
+    body('title').notEmpty().withMessage('Title is required'),
+    body('director').notEmpty().withMessage('Director is required'),
     body('releaseYear')
-      .notEmpty().withMessage('Release year is required')
       .isInt({ min: 1888, max: new Date().getFullYear() })
       .withMessage('Release year must be valid'),
-
     body('genre')
-      .notEmpty().withMessage('Genre is required')
       .isIn(['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Romance', 'Other'])
       .withMessage('Invalid genre'),
-      
-    body('image')
-      .optional()
-      .isURL().withMessage('Image must be a valid URL'),
+    body('image').optional().isURL().withMessage('Image must be a valid URL'),
   ],
-  async (req, res) => {
+  async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     try {
       const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, { new: true });
       if (!movie) return res.status(404).json({ error: 'Movie not found' });
       res.json(movie);
     } catch (err) {
-      res.status(500).json({ error: 'Server error' });
+      next(err);
     }
   }
 );
-
-
-
-// Delete a movie
 
 /**
  * @swagger
  * /api/movies/{id}:
  *   delete:
- *     description: Delete a movie
+ *     summary: Delete a movie
  *     parameters:
  *       - in: path
  *         name: id
- *         description: ID of the movie to delete
  *         required: true
  *         schema:
  *           type: string
@@ -293,17 +253,35 @@ app.put('/api/movies/:id',
  *       404:
  *         description: Movie not found
  */
-app.delete('/api/movies/:id', async (req, res) => {
+app.delete('/api/movies/:id', async (req, res, next) => {
   try {
     const movie = await Movie.findByIdAndDelete(req.params.id);
-    if (!movie) return res.status(404).send('Movie not found');
-    res.send('Movie deleted');
+    if (!movie) return res.status(404).json({ error: 'Movie not found' });
+    res.json({ message: 'Movie deleted' });
   } catch (err) {
-    res.status(400).send('Invalid ID');
+    next(err);
   }
 });
 
-// Start the server
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Not Found',
+    message: `Route ${req.method} ${req.url} not found`,
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(`[ERROR] ${err.stack}`);
+  fs.appendFile('log.txt', `[${new Date().toISOString()}] ERROR: ${err.stack}\n`, () => {});
+  res.status(500).json({
+    error: 'Server Error',
+    message: err.message || 'Something went wrong',
+  });
+});
+
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

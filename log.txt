@@ -1,1 +1,14 @@
 [2025-05-04T15:52:44.086Z] GET /
+[2025-05-05T13:07:42.465Z] ERROR: SyntaxError: Unexpected non-whitespace character after JSON at position 202 (line 7 column 4)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\sleep\OneDrive\Desktop\nodejs\Movie Mangment\MovieMangment\node_modules\body-parser\lib\types\json.js:77:19)
+    at C:\Users\sleep\OneDrive\Desktop\nodejs\Movie Mangment\MovieMangment\node_modules\body-parser\lib\read.js:123:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)
+    at invokeCallback (C:\Users\sleep\OneDrive\Desktop\nodejs\Movie Mangment\MovieMangment\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\sleep\OneDrive\Desktop\nodejs\Movie Mangment\MovieMangment\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\sleep\OneDrive\Desktop\nodejs\Movie Mangment\MovieMangment\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:507:28)
+    at endReadableNT (node:internal/streams/readable:1696:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[2025-05-05T13:08:00.747Z] POST /api/movies
+[2025-05-05T13:08:06.998Z] GET /api/movies
